@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<security>
+  <version>2.0.5</version>
+  <users>
+{% for user in nexus_users %}
+    <user>
+      <id>{{ user.id }}</id>
+      <firstName>{{user.firstName}}</firstName>
+      <lastName>{{user.lastName}}</lastName>
+      <password>{{user.password}}</password>
+      <status>{{user.status}}</status>
+      <email>{{user.email}}</email>
+    </user>
+{% endfor %}
+  </users>
+  <userRoleMappings>
+{% for userRoleMapping in nexus_userRoleMappings %}
+    <userRoleMapping>
+      <userId>{{userRoleMapping.userId}}</userId>
+      <source>{{userRoleMapping.source}}</source>
+      <roles>
+{% for role in userRoleMapping.roles %}
+          <role>{{role}}</role>
+{% endfor %}
+      </roles>
+    </userRoleMapping>
+{% endfor %}
+  </userRoleMappings>
+</security>

@@ -1,0 +1,21 @@
+---
+ - name: Install Java on all machines
+   hosts: all
+   sudo: yes
+   roles:
+   - role: ahazem.java_ubuntu_saucy
+     java_ubuntu_saucy_jdk: oracle
+     java_ubuntu_saucy_jdk_version: 8
+     java_ubuntu_saucy_jdk_version_default: 8
+ - name: Set up the Jenkins machine
+   hosts: jenkins
+   sudo: yes
+   pre_tasks:
+   roles:
+   - role: avanov.jenkins 
+     jenkins_http_port: 8888
+ - name: Set up Nexus machine
+   hosts: nexus
+   sudo: yes
+   roles:
+   - role: adham.helal.nexus

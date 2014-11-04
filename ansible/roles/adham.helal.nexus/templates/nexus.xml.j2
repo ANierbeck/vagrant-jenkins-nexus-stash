@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nexusConfiguration>
+  <version>2.7.0</version>
+  <nexusVersion>2.7.1-01</nexusVersion>
+  <globalConnectionSettings>
+    <connectionTimeout>{{nexus_globalConnectionSettings_connectionTimeout}}</connectionTimeout>
+    <retrievalRetryCount>{{nexus_globalConnectionSettings_retrievalRetryCount}}</retrievalRetryCount>
+    <queryString></queryString>
+  </globalConnectionSettings>
+  <restApi>
+    <baseUrl>{{nexus_restApi_baseUrl}}</baseUrl>
+    <forceBaseUrl>{{nexus_restApi_forceBaseUrl}}</forceBaseUrl>
+    <uiTimeout>{{nexus_restApi_uiTimeout}}</uiTimeout>
+  </restApi>
+  <httpProxy>
+    <enabled>{{nexus_httpProxy_enabled}}</enabled>
+    <port>{{nexus_httpProxy_port}}</port>
+    <proxyPolicy>{{nexus_httpProxy_proxyPolicy}}</proxyPolicy>
+  </httpProxy>
+  <routing>
+    <resolveLinks>{{nexus_routing_resolveLinks}}</resolveLinks>
+  </routing>
+  <repositories>
+{% for repository in nexus_repositories %}
+    <repository>
+      <id>{{repository.id}}</id>
+      <name>{{repository.name}}</name>
+{% if repository.providerRole is defined %}
+      <providerRole>{{repository.providerRole}}</providerRole>
+{% endif %}
+      <providerHint>{{repository.providerHint}}</providerHint>
+      <localStatus>{{repository.localStatus}}</localStatus>
+{% if repository.notFoundCacheActive is defined %}
+      <notFoundCacheActive>{{repository.notFoundCacheActive}}</notFoundCacheActive>
+{% endif %}
+{% if repository.notFoundCacheTTL is defined %}
+      <notFoundCacheTTL>{{repository.notFoundCacheTTL}}</notFoundCacheTTL>
+{% endif %}
+      <userManaged>{{repository.userManaged}}</userManaged>
+      <exposed>{{repository.exposed}}</exposed>
+      <browseable>{{repository.browseable}}</browseable>
+      <writePolicy>{{repository.writePolicy}}</writePolicy>
+{% if repository.indexable is defined %}
+      <indexable>{{repository.indexable}}</indexable>
+{% endif %}
+{% if repository.searchable is defined %}
+      <searchable>{{repository.searchable}}</searchable>
+{% endif %}
+      <localStorage>
+        <provider>{{repository.localStorage}}</provider>
+      </localStorage>
+{% if repository.remoteStorage is defined %}
+      <remoteStorage>
+        <url>{{repository.remoteStorage}}</url>
+      </remoteStorage>
+{% endif %}
+      <externalConfiguration>
+{% if repository.externalConfiguration_masterRepositoryId is defined %}
+        <masterRepositoryId>{{repository.externalConfiguration_masterRepositoryId}}</masterRepositoryId>
+{% endif %}
+{% if repository.externalConfiguration_syncAtStartup is defined %}
+        <syncAtStartup>{{repository.externalConfiguration_syncAtStartup}}</syncAtStartup>
+{% endif %}
+{% if repository.externalConfiguration_proxyMode is defined %}
+        <proxyMode>{{repository.externalConfiguration_proxyMode}}</proxyMode>
+{% endif %}
+{% if repository.externalConfiguration_artifactMaxAge is defined %}
+        <artifactMaxAge>{{repository.externalConfiguration_artifactMaxAge}}</artifactMaxAge>
+{% endif %}
+{% if repository.externalConfiguration_metadataMaxAge is defined %}
+        <metadataMaxAge>{{repository.externalConfiguration_metadataMaxAge}}</metadataMaxAge>
+{% endif %}
+{% if repository.externalConfiguration_itemMaxAge is defined %}
+        <itemMaxAge>{{repository.externalConfiguration_itemMaxAge}}</itemMaxAge>
+{% endif %}
+{% if repository.externalConfiguration_autoBlockActive is defined %}
+        <autoBlockActive>{{repository.externalConfiguration_autoBlockActive}}</autoBlockActive>
+{% endif %}
+{% if repository.externalConfiguration_cleanseRepositoryMetadata is defined %}
+        <cleanseRepositoryMetadata>{{repository.externalConfiguration_cleanseRepositoryMetadata}}</cleanseRepositoryMetadata>
+{% endif %}
+{% if repository.externalConfiguration_downloadRemoteIndex is defined %}
+        <downloadRemoteIndex>{{repository.externalConfiguration_downloadRemoteIndex}}</downloadRemoteIndex>
+{% endif %}
+{% if repository.externalConfiguration_checksumPolicy is defined %}
+        <checksumPolicy>{{repository.externalConfiguration_checksumPolicy}}</checksumPolicy>
+{% endif %}
+{% if repository.externalConfiguration_fileTypeValidation is defined %}
+        <fileTypeValidation>{{repository.externalConfiguration_fileTypeValidation}}</fileTypeValidation>
+{% endif %}
+{% if repository.externalConfiguration_repositoryPolicy is defined %}
+        <repositoryPolicy>{{repository.externalConfiguration_repositoryPolicy}}</repositoryPolicy>
+{% endif %}
+{% if repository.externalConfiguration_mergeMetadata is defined %}
+        <mergeMetadata>{{repository.externalConfiguration_mergeMetadata}}</mergeMetadata>
+{% endif %}
+{% if repository.externalConfiguration_memberRepositories is defined %}
+        <memberRepositories>
+{% for memberRepository in repository.externalConfiguration_memberRepositories %}
+          <memberRepository>{{memberRepository}}</memberRepository>
+{% endfor %}
+        </memberRepositories>
+{% endif %}
+{% if repository.externalConfiguration_welcomeFiles is defined %}
+        <welcomeFiles>
+{% for welcomefile in repository.externalConfiguration_welcomeFiles %}
+          <welcomeFile>{{ welcomefile }}</welcomeFile>
+{% endfor %}
+        </welcomeFiles>
+{% endif %}
+      </externalConfiguration>
+    </repository>
+{% endfor %}
+  </repositories>
+  <repositoryGrouping>
+    <pathMappings>
+{% for pathMapping in Grouping_pathMapping %}
+      <pathMapping>
+        <id>{{pathMapping.id}}</id>
+        <groupId>{{pathMapping.groupId}}</groupId>
+        <routeType>{{pathMapping.routeType}}</routeType>
+        <routePatterns>
+{% for routePattern in pathMapping.routePatterns %}
+          <routePattern>{{routePattern}}</routePattern>
+{% endfor %}
+        </routePatterns>
+        <repositories>
+{% for repository in pathMapping.repositories %}
+          <repository>{{repository}}</repository>
+{% endfor %}
+        </repositories>
+      </pathMapping>
+{% endfor %}
+    </pathMappings>
+  </repositoryGrouping>
+  <repositoryTargets>
+{% for repositoryTarget in nexus_repositoryTargets %}
+    <repositoryTarget>
+      <id>{{repositoryTarget.id}}</id>
+      <name>{{repositoryTarget.name}}</name>
+      <contentClass>{{repositoryTarget.contentClass}}</contentClass>
+      <patterns>
+        <pattern>{{repositoryTarget.pattern}}</pattern>
+      </patterns>
+    </repositoryTarget>
+{% endfor %}
+  </repositoryTargets>
+{% if nexus_tasks is defined %}
+ <tasks>
+{% for task in nexus_tasks %}
+    <task>
+      <id>{{task.id}}</id>
+      <name>{{task.name}}</name>
+      <enabled>{{task.enabled}}</enabled>
+      <type>{{task.type}}</type>
+      <status>{{task.status}}</status>
+      <nextRun>{{task.nextRun}}</nextRun>
+      <schedule>
+        <type>{{task.schedule_type}}</type>
+        <startDate>{{task.schedule_startDate}}</startDate>
+      </schedule>
+{% if task.property is defined %}
+      <properties>
+{% for property in task.property %}
+        <property>
+          <key>{{property.key}}</key>
+          <value>{{property.value}}</value>
+        </property>
+{% endfor %}
+      </properties>
+{% endif %}
+    </task>
+{% endfor %}
+  </tasks>
+{% endif %}
+  <smtpConfiguration>
+    <hostname>{{nexus_smtpConfiguration_hostname}}</hostname>
+    <port>{{nexus_smtpConfiguration_port}}</port>
+    <username>{{nexus_smtpConfiguration_username}}</username>
+    <password>{{nexus_smtpConfiguration_password}}</password>
+    <systemEmailAddress>{{nexus_smtpConfiguration_systemEmailAddress}}</systemEmailAddress>
+  </smtpConfiguration>
+  <notification />
+</nexusConfiguration>

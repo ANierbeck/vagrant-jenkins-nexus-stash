@@ -1,0 +1,7 @@
+---
+
+- include     : nexus.yml
+- include     : plugins.yml
+  when        : nexus_plugins_install  
+- include     : settings.yml
+

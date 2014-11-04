@@ -1,0 +1,19 @@
+{
+  "CHANGES.md": "fe54bcda446c10426f345597f56b6f77",
+  "LICENSE": "0c5d3553d4942536850fcbf0b17c856b",
+  "Modulefile": "e17d1a5e757c1d30568d20a3d0afbfaa",
+  "README.md": "c11eb35c94ca310b486b535c617838ec",
+  "Rakefile": "8ad2fc44c6681194653fb31cfe07d72e",
+  "manifests/config.pp": "74c714aa49fe4e515bfdf717a91f249c",
+  "manifests/init.pp": "21b15afd716ac4e3f4a73e017ae98dfe",
+  "manifests/package.pp": "57bfef73cea9df83d7210f81f846e862",
+  "manifests/params.pp": "7d4095034b84b49c6f42a104e2d1fc62",
+  "manifests/service.pp": "4cdf391c71e1b2746728a43120debe66",
+  "metadata.json": "f6cf0ae1be15a4290b11ba6e6bc5f678",
+  "spec/classes/config_spec.rb": "d41d8cd98f00b204e9800998ecf8427e",
+  "spec/classes/init_spec.rb": "3ca7c245d3fd481b70d0b6e2d3521021",
+  "spec/classes/package_spec.rb": "d41d8cd98f00b204e9800998ecf8427e",
+  "spec/classes/service_spec.rb": "16bce3fabff631705e747d239b24d683",
+  "spec/fixtures/manifests/site.pp": "d41d8cd98f00b204e9800998ecf8427e",
+  "spec/spec_helper.rb": "31443cbb31de764aac79186cbc17689f"
+}

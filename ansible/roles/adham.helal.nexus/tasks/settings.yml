@@ -1,0 +1,22 @@
+---
+
+
+- name: settings | Deploy security.xml
+  template:
+    src=security.xml.j2
+    dest="{{nexus_dir_sonatype_work}}/nexus/conf/security.xml"
+    owner={{nexus_user}} 
+    group={{nexus_user}}
+    mode=0644
+  notify: restart nexus
+  tags: nexus_setting
+
+- name: settings | Deploy nexus.xml
+  template: 
+    src=nexus.xml.j2
+    dest="{{nexus_dir_sonatype_work}}/nexus/conf/nexus.xml"
+    owner={{nexus_user}} 
+    group={{nexus_user}}
+    mode=0644
+  notify: restart nexus
+  tags: nexus_setting

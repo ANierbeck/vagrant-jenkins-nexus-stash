@@ -1,0 +1,325 @@
+
+## Nexus Setup Setting Section
+nexus_host               : "{{ansible_fqdn}}"
+nexus_version            : "2.7.1"
+nexus_download_URL       : "http://download.sonatype.com/nexus/oss/{{nexus_archive}}"
+### Jetty
+jetty_bind               : "0.0.0.0"
+jetty_port               : "8081"
+nexus_url                : "http://{{nexus_host}}:{{jetty_port}}"
+### Nexus system user
+nexus_user               : nexus
+nexus_group              : nexus
+nexus_home               : "/home/{{nexus_user}}"
+### Directory & files
+nexus_service_name       : "nexus"     ## Think twice before changing it :)
+nexus_service_desc       : "nexusOSS"
+nexus_sonatype_work_name : "sonatype-work"
+nexus_dir_base           : "/home/{{nexus_user}}"
+nexus_dir_base_bundle    : "/home/{{nexus_user}}/{{nexus_service_name}}"
+nexus_dir_sonatype_work  : "{{nexus_dir_base}}/{{nexus_sonatype_work_name}}"
+nexus_dir_plugins        : "{{nexus_dir_base_bundle}}/nexus/WEB-INF/plugin-repository"
+nexus_dir_tmp            : "/tmp"
+nexus_archive            : "nexus-{{nexus_version}}-bundle.tar.gz"
+
+## Nexus Plugins Section
+### p2 plugins
+nexus_plugins_install            : False
+nexus_plugins_p2_version         : "2.8.1-m1"
+nexus_plugins_p2_url             : 'https://repository.sonatype.org/service/local/repositories/nexus_oss-1069/content/org/sonatype/nexus/plugins'
+nexus_plugins_p2_dir             : "nexus-p2-repository-plugin/{{nexus_plugins_p2_version}}" 
+nexus_plugins_p2_file            : "nexus-p2-repository-plugin-{{nexus_plugins_p2_version}}-bundle.zip"
+nexus_plugins_p2_bridge_dir      : "nexus-p2-bridge-plugin/{{nexus_plugins_p2_version}}" 
+nexus_plugins_p2_bridge_file     : "nexus-p2-bridge-plugin-{{nexus_plugins_p2_version}}-bundle.zip"
+### Array of plugins to be installed
+nexus_plugins:
+   - url  : "{{nexus_plugins_p2_url}}/{{nexus_plugins_p2_dir}}/"
+     file : "{{nexus_plugins_p2_file}}"
+
+   - url  : "{{nexus_plugins_p2_url}}/{{nexus_plugins_p2_bridge_dir}}/"
+     file : "{{nexus_plugins_p2_bridge_file}}"
+## Security Section
+nexus_users     :
+   - id        : "admin"
+     firstName : "Administrator"
+     lastName  : "User"
+     password  : "$shiro1$SHA-512$1024$G+rxqm4Qw5/J54twR6BrSQ==$2ZUS4aBHbGGZkNzLugcQqhea7uPOXhoY4kugop4r4oSAYlJTyJ9RyZYLuFBmNzDr16Ii1Q+O6Mn1QpyBA1QphA=="
+     status    : "active"
+     email     : "changeme@yourcompany.com"
+
+   - id        : "deployment"
+     firstName : "Deployment"
+     lastName  : "User"
+     password  : "b2a0e378437817cebdf753d7dff3dd75483af9e0"
+     status    : "active"
+     email     : "changeme1@yourcompany.com"
+
+   - id        : "anonymous"
+     firstName : "Nexus"
+     lastName  : "Anonymous User"
+     password  : "$shiro1$SHA-512$1024$bMu8OG8U1JLUYbONuZy2RA==$Qf57l0Ty8fw+/r28Qwa+z9haVuf5qOiQ1BSghmerAlksc140qsVEiDUp3IXP+MlM1QnqLIg/jka4g815ofyTfQ=="
+     status    : "active"
+     email     : "changeme2@yourcompany.com"
+nexus_userRoleMappings :
+   - userId    : "admin"
+     source    : "default"
+     roles     : 
+        - "nx-admin"
+   - userId    : "deployment"
+     source    : "default"
+     roles     : 
+        - "nx-deployment"
+        - "repository-any-full"
+   - userId    : "anonymous"
+     source    : "default"
+     roles     : 
+        - "anonymous"        
+        - "repository-any-read"
+##mvn --emp "admin"
+
+## Repositories Section 
+nexus_repositories :
+   - id                                              : "central" 
+     name                                            : "Central"
+     providerRole                                    : "org.sonatype.nexus.proxy.repository.Repository"
+     providerHint                                    : "maven2"
+     localStatus                                     : "IN_SERVICE"
+     notFoundCacheActive                             : "true"
+     notFoundCacheTTL                                : "1440"
+     userManaged                                     : "true"
+     exposed                                         : "true"
+     browseable                                      : "true"
+     writePolicy                                     : "READ_ONLY"
+     indexable                                       : "true"
+     searchable                                      : "true"
+     localStorage                                    : "file"
+     remoteStorage                                   : "http://repo1.maven.org/maven2/"
+     externalConfiguration_proxyMode                 : "ALLOW"
+     externalConfiguration_artifactMaxAge            : "-1"
+     externalConfiguration_itemMaxAge                : "1440"
+     externalConfiguration_cleanseRepositoryMetadata : "false"
+     externalConfiguration_downloadRemoteIndex       : "false"
+     externalConfiguration_checksumPolicy            : "WARN"
+     externalConfiguration_repositoryPolicy          : "RELEASE"
+
+   - id                                              : "apache-snapshots" 
+     name                                            : "Apache Snapshots"
+     providerRole                                    : "org.sonatype.nexus.proxy.repository.Repository"
+     providerHint                                    : "maven2"
+     localStatus                                     : "IN_SERVICE"
+     notFoundCacheActive                             : "true"
+     notFoundCacheTTL                                : "1440"
+     userManaged                                     : "true"
+     exposed                                         : "true"
+     browseable                                      : "true"
+     writePolicy                                     : "READ_ONLY"
+     indexable                                       : "true"
+     searchable                                      : "true"
+     localStorage                                    : "file"
+     remoteStorage                                   : "http://repository.apache.org/snapshots/"
+     externalConfiguration_proxyMode                 : "ALLOW"
+     externalConfiguration_artifactMaxAge            : "1440"
+     externalConfiguration_itemMaxAge                : "1440"
+     externalConfiguration_cleanseRepositoryMetadata : "false"
+     externalConfiguration_downloadRemoteIndex       : "false"
+     externalConfiguration_checksumPolicy            : "WARN"
+     externalConfiguration_repositoryPolicy          : "SNAPSHOT"
+
+   - id                                              : "codehaus-snapshots" 
+     name                                            : "Codehaus Snapshots"
+     providerRole                                    : "org.sonatype.nexus.proxy.repository.Repository"
+     providerHint                                    : "maven2"
+     localStatus                                     : "IN_SERVICE"
+     notFoundCacheActive                             : "true"
+     notFoundCacheTTL                                : "1440"
+     userManaged                                     : "true"
+     exposed                                         : "true"
+     browseable                                      : "true"
+     writePolicy                                     : "READ_ONLY"
+     indexable                                       : "true"
+     searchable                                      : "true"
+     localStorage                                    : "file"
+     remoteStorage                                   : "http://nexus.codehaus.org/snapshots/"
+     externalConfiguration_proxyMode                 : "ALLOW"
+     externalConfiguration_artifactMaxAge            : "1440"
+     externalConfiguration_itemMaxAge                : "1440"
+     externalConfiguration_cleanseRepositoryMetadata : "false"
+     externalConfiguration_downloadRemoteIndex       : "false"
+     externalConfiguration_checksumPolicy            : "WARN"
+     externalConfiguration_repositoryPolicy          : "SNAPSHOT"
+
+   - id                                              : "releases" 
+     name                                            : "Releases"
+     providerRole                                    : "org.sonatype.nexus.proxy.repository.Repository"
+     providerHint                                    : "maven2"
+     localStatus                                     : "IN_SERVICE"
+     notFoundCacheTTL                                : "1440"
+     userManaged                                     : "true"
+     exposed                                         : "true"
+     browseable                                      : "true"
+     writePolicy                                     : "ALLOW_WRITE_ONCE"
+     indexable                                       : "true"
+     searchable                                      : "true"
+     localStorage                                    : "file"
+     externalConfiguration_proxyMode                 : "ALLOW"
+     externalConfiguration_artifactMaxAge            : "-1"
+     externalConfiguration_itemMaxAge                : "1440"
+     externalConfiguration_cleanseRepositoryMetadata : "false"
+     externalConfiguration_downloadRemoteIndex       : "false"
+     externalConfiguration_checksumPolicy            : "WARN"
+     externalConfiguration_repositoryPolicy          : "RELEASE"
+
+   - id                                              : "snapshots" 
+     name                                            : "Snapshots"
+     providerRole                                    : "org.sonatype.nexus.proxy.repository.Repository"
+     providerHint                                    : "maven2"
+     localStatus                                     : "IN_SERVICE"
+     notFoundCacheTTL                                : "1440"
+     itemMaxAge                                      : "1440"
+     userManaged                                     : "true"
+     exposed                                         : "true"
+     browseable                                      : "true"
+     writePolicy                                     : "ALLOW_WRITE"
+     indexable                                       : "true"
+     searchable                                      : "true"
+     localStorage                                    : "file"
+     externalConfiguration_proxyMode                 : "ALLOW"
+     externalConfiguration_artifactMaxAge            : "1440"
+     externalConfiguration_itemMaxAge                : "1440"
+     externalConfiguration_cleanseRepositoryMetadata : "false"
+     externalConfiguration_downloadRemoteIndex       : "false"
+     externalConfiguration_checksumPolicy            : "WARN"
+     externalConfiguration_repositoryPolicy          : "SNAPSHOT"
+
+   - id                                              : "thirdparty" 
+     name                                            : "3rd party"
+     providerRole                                    : "org.sonatype.nexus.proxy.repository.Repository"
+     providerHint                                    : "maven2"
+     localStatus                                     : "IN_SERVICE"
+     notFoundCacheTTL                                : "1440"
+     userManaged                                     : "true"
+     exposed                                         : "true"
+     browseable                                      : "true"
+     writePolicy                                     : "ALLOW_WRITE_ONCE"
+     indexable                                       : "true"
+     searchable                                      : "true"
+     localStorage                                    : "file"
+     externalConfiguration_proxyMode                 : "ALLOW"
+     externalConfiguration_artifactMaxAge            : "-1"
+     externalConfiguration_itemMaxAge                : "1440"
+     externalConfiguration_cleanseRepositoryMetadata : "false"
+     externalConfiguration_downloadRemoteIndex       : "false"
+     externalConfiguration_checksumPolicy            : "WARN"
+     externalConfiguration_repositoryPolicy          : "RELEASE"     
+
+   - id                                              : "central-m1" 
+     name                                            : "Central M1 shadow"
+     providerRole                                    : "org.sonatype.nexus.proxy.repository.ShadowRepository"
+     providerHint                                    : "m2-m1-shadow"
+     localStatus                                     : "IN_SERVICE"
+     notFoundCacheTTL                                : "15"
+     userManaged                                     : "true"
+     exposed                                         : "true"
+     browseable                                      : "true"
+     writePolicy                                     : "READ_ONLY"
+     localStorage                                    : "file"
+     externalConfiguration_masterRepositoryId        : "central"
+     externalConfiguration_syncAtStartup             : "false"
+
+   - id                                              : "public" 
+     name                                            : "Public Repositories"
+     providerRole                                    : "org.sonatype.nexus.proxy.repository.GroupRepository"
+     providerHint                                    : "maven2"
+     localStatus                                     : "IN_SERVICE"
+     notFoundCacheTTL                                : "15"
+     userManaged                                     : "true"
+     exposed                                         : "true"
+     browseable                                      : "true"
+     writePolicy                                     : "READ_ONLY"
+     indexable                                       : "true"
+     localStorage                                    : "file"
+     externalConfiguration_mergeMetadata             : "true"
+     externalConfiguration_memberRepositories        :
+        - "releases"
+        - "snapshots"
+        - "thirdparty"
+        - "central"
+
+### Repository Grouping Section
+Grouping_pathMapping :
+   - id                           : "inhouse-stuff"
+     groupId                      : "*"     
+     routeType                    : "inclusive"   
+     routePatterns                            :
+            - "^/(com|org)/somecompany/.*"
+     repositories                             :
+           - snapshots
+           - releases
+
+   - id                           : "apache-stuff"
+     groupId                      : "*"     
+     routeType                    : "exclusive"   
+     routePatterns                            :
+            - "^/org/some-oss/.*"
+     repositories                             :
+           - releases
+           - snapshots
+
+### Repository Targets Section
+nexus_repositoryTargets :
+   - id                                        : "1"
+     name                                      : "All (Maven2)"
+     contentClass                              : "maven2"
+     pattern                                   : ".*"
+
+   - id                                        : "2"
+     name                                      : "All (Maven1)"
+     contentClass                              : "maven1"
+     pattern                                   : ".*"
+
+   - id                                        : "3"
+     name                                      : "All but sources (Maven2)"
+     contentClass                              : "maven2"
+     pattern                                   : "(?!.*-sources.*).*"
+
+   - id                                        : "4"
+     name                                      : "All Metadata (Maven2)"
+     contentClass                              : "maven2"
+     pattern                                   : ".*maven-metadata\\.xml.*"
+
+   - id                                        : "any"
+     name                                      : "All (Any Repository)"
+     contentClass                              : "any"
+     pattern                                   : ".*"
+
+   - id                                        : "site"
+     name                                      : "All (site)"
+     contentClass                              : "site"
+     pattern                                   : ".*"
+
+## Nexus Setting Section
+### Global Setting
+nexus_globalConnectionSettings_connectionTimeout      : 40000
+nexus_globalConnectionSettings_retrievalRetryCount    : 10
+### Rest API
+nexus_restApi_baseUrl                                 : "{{nexus_url}}/nexus"
+nexus_restApi_forceBaseUrl                            : "true"
+nexus_restApi_uiTimeout                               : "120000"
+### http Proxy
+nexus_httpProxy_enabled                               : "true"
+nexus_httpProxy_port                                  : 8082
+nexus_httpProxy_proxyPolicy                           : "strict"
+### Routing
+nexus_routing_resolveLinks                            : "true"
+
+
+
+### Tasks
+
+### smtp
+nexus_smtpConfiguration_hostname                      : locahost
+nexus_smtpConfiguration_port                          : 25
+nexus_smtpConfiguration_username                      : ""
+nexus_smtpConfiguration_password                      : ""
+nexus_smtpConfiguration_systemEmailAddress            : "system@nexus.org"
+

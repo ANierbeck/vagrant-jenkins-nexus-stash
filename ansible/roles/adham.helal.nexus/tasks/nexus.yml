@@ -1,0 +1,108 @@
+---
+
+- name: nexus | Install unzip 
+  apt: 
+    pkg=unzip
+    state="present"
+  tags: nexus
+
+- name: nexus | Create nexus user
+  user: 
+     name="{{nexus_user}}"
+     home="{{nexus_home}}"
+     shell="/bin/bash"
+     append="true"
+     comment="Nexsus user"
+  tags: nexus
+
+- name: nexus | Download nexus archive
+  get_url: 
+     url="{{nexus_download_URL}}"
+     dest="{{nexus_dir_tmp}}/{{nexus_archive}}"
+  tags: nexus
+
+- name: nexus | Resolve nexus_dir name from tar
+  shell: 
+    tar tf {{nexus_dir_tmp}}/{{nexus_archive}}  | head -1
+  changed_when: False
+  register: tar_dir_name
+
+- name: nexus | Unarchive nexus 
+  unarchive: 
+     copy=no
+     src="{{nexus_dir_tmp}}/{{nexus_archive}}"
+     dest="{{nexus_dir_base}}/"
+     creates="{{nexus_dir_base}}/{{tar_dir_name.stdout}}/bin"
+  sudo_user: "{{nexus_user}}"
+  notify: restart nexus
+  register: nexus_unarchive
+  tags: nexus
+
+- name: nexus | update sym link nexus 
+  file: 
+     src="{{nexus_dir_base}}/{{tar_dir_name.stdout}}"
+     dest="{{nexus_dir_base}}/{{nexus_service_name}}"
+     owner="{{nexus_user}}"
+     group="{{nexus_group}}"
+     state=link
+  notify: restart nexus
+  tags: nexus
+
+- name: nexus | Install boot script
+  template:
+    src=nexus_init.d.j2 
+    dest="/etc/init.d/{{nexus_service_name}}"
+    owner=root 
+    group=root 
+    mode=0755
+  notify: restart nexus
+
+- name: nexus | Deploy nexus.properties
+  template: 
+    src=nexus.properties.j2 
+    dest="{{nexus_dir_base}}/{{tar_dir_name.stdout}}/conf/nexus.properties"
+    owner={{nexus_user}} 
+    group={{nexus_user}}
+    mode=0644
+  notify: restart nexus
+  tags: nexus_url
+
+- name: nexus | Start nexus to create sonatype-work
+  service:
+     name="{{nexus_service_name}}"
+     state=restarted
+  tags: nexus
+  when: nexus_unarchive | changed
+
+- name: nexus | Wait for nexus to start listening on tcp
+  wait_for:
+     port="{{jetty_port}}"
+     timeout=120
+     state=started
+  tags: nexus
+  when: nexus_unarchive | changed  
+
+- name: nexus | Wait for nexus to create sonatype-work
+  wait_for:
+     path="{{nexus_dir_sonatype_work}}/nexus/conf/nexus.xml"
+  tags: nexus
+  when: nexus_unarchive | changed  
+
+- name: nexus | Stop nexus
+  service:
+     name="{{nexus_service_name}}"
+     state=stopped
+  tags: nexus
+  when: nexus_unarchive | changed  
+
+- name: nexus | Deploy index.html
+  template: 
+     src=index.html.j2 
+     dest="{{nexus_dir_sonatype_work}}/index.html"
+     owner="{{nexus_user}}"
+     group="{{nexus_group}}"
+     mode=0644
+  tags: nexus
+
+
+  
