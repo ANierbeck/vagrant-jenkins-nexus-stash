@@ -12,10 +12,7 @@
    sudo: yes
    pre_tasks:
    roles:
+   - role: geerlingguy.git
+   - role: robdyke.maven
    - role: avanov.jenkins 
      jenkins_http_port: 8888
- - name: Set up Nexus machine
-   hosts: nexus
-   sudo: yes
-   roles:
-   - role: adham.helal.nexus
