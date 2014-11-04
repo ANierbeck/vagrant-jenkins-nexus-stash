@@ -1,0 +1,6 @@
+**/.DS_Store
+.lock
+.vagrant
+.version
+stash-home
+atlassian-stash-3.4.0
